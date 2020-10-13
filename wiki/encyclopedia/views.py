@@ -67,6 +67,9 @@ def random(request):
         page_header = "No articles found in the article repository"
         return render_index(request, page_header, entries)
 
+def newpage(request):
+    return render(request, "encyclopedia/newpage.html")
+
 # Aux functions
 def render_index(request, page_header, entries):
     return render(request, "encyclopedia/index.html", {

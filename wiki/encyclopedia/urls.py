@@ -6,5 +6,6 @@ app_name = "encyclopedia"
 urlpatterns = [
     path("", views.index, name="index"),
     path("wiki/<str:entry>", views.entry, name="entry"),
-    path("random", views.random, name="random")
+    path("random", views.random, name="random"),
+    path("newpage", views.newpage, name="newpage")
 ]

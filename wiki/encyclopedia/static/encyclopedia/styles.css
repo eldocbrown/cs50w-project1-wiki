@@ -36,3 +36,23 @@ textarea {
 .sidebar h2 {
     margin-top: 5px;
 }
+
+.form_container {
+  height: 80%;
+  width: 95%
+}
+
+.content_container {
+  height: 80%;
+  padding-top:10px
+}
+
+.page_content {
+  height: 100%;
+  width: 100%;
+  resize: none;
+}
+
+.button_container {
+  padding-top:10px
+}
