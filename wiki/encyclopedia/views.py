@@ -1,19 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from . import util
-
-def render_index(request, page_header, entries):
-    return render(request, "encyclopedia/index.html", {
-        "page_header": page_header,
-        "entries": entries
-    })
-
-def search_entries(entries, q):
-    result = []
-    for entry in entries:
-        if q in entry:
-            result.append(entry)
-    return result
+import random as rdm
 
 def index(request):
     # If it is a POST request, assume its a Search operation
@@ -64,3 +52,29 @@ def entry(request, entry):
         "title": title,
         "content": content
     })
+
+def random(request):
+    entries = util.list_entries()
+    # Entries found in directory
+    if len(entries) > 0:
+        # Select random entry from Entries
+        entry = rdm.choice(entries)
+        return redirect('encyclopedia:entry', entry=entry)
+    # No entries found in directory
+    else:
+        page_header = "No articles found in the article repository"
+        return render_index(request, page_header, entries)
+
+# Aux functions
+def render_index(request, page_header, entries):
+    return render(request, "encyclopedia/index.html", {
+        "page_header": page_header,
+        "entries": entries
+    })
+
+def search_entries(entries, q):
+    result = []
+    for entry in entries:
+        if q in entry:
+            result.append(entry)
+    return result
