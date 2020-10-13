@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from . import util
 import random as rdm
+from . import util
+from . import lang_util
 
 def index(request):
     # If it is a POST request, assume its a Search operation
@@ -41,8 +42,9 @@ def index(request):
 
 def entry(request, entry):
     #Try to get entry
-    content = util.get_entry(entry)
-    if content is not None:
+    mdContent = util.get_entry(entry)
+    if mdContent is not None:
+        content = lang_util.markdownToHtml(mdContent)
         title = entry
     else:
         title = "Article not found"
