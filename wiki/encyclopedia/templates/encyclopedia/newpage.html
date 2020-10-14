@@ -9,12 +9,7 @@
     <div class="form_container">
       <form action="{% url 'encyclopedia:newpage' %}" method="post" style="height:100%;width:100%">
         {% csrf_token %}
-        <div class="title_container">
-          <input class="page_title" type="text" name="title" placeholder="Title">
-        </div>
-        <div class="content_container">
-          <textarea class="page_content" name="page_content" placeholder="Markdown Syntax Page Content"></textarea>
-        </div>
+        {{ form }}
         <div class="button_container">
           <input class="submit_button" type="submit" value="Save Page">
         </div>

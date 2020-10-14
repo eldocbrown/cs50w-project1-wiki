@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
+from django import forms
 import random as rdm
 from . import util
 from . import lang_util
@@ -67,8 +69,23 @@ def random(request):
         page_header = "No articles found in the article repository"
         return render_index(request, page_header, entries)
 
+class NewPageForm(forms.Form):
+    title = forms.CharField(label="", widget=forms.TextInput(attrs={'placeholder': 'Title', 'class': 'page_title'}))
+    content = forms.CharField(label="", widget=forms.Textarea(attrs={'placeholder': 'Markdown Syntax Page Content', 'class': 'page_content'}))
+
 def newpage(request):
-    return render(request, "encyclopedia/newpage.html")
+    if request.method == "POST":
+        form = NewPageForm(request.POST)
+        if form.is_valid():
+
+            return HttpResponseRedirect(reverse("encyclopedia:newpage"))
+        else:
+            return render(request, "encyclopedia/add.html", {
+                "form":form
+            })
+    return render(request, "encyclopedia/newpage.html", {
+        "form": NewPageForm()
+    })
 
 # Aux functions
 def render_index(request, page_header, entries):
