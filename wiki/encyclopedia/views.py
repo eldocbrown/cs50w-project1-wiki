@@ -49,14 +49,14 @@ def entry(request, entry):
     if mdContent is not None:
         content = lang_util.markdownToHtml(mdContent)
         title = entry
+        return render(request, "encyclopedia/entry.html", {
+            "title": title,
+            "content": content
+        })
     else:
-        title = "Article not found"
-        content = f"Wiki does not have an article with this exact name. Please search for {entry} in Wiki to check for alternative titles or spellings."
+        return render_message(request, "Article not found", f"Wiki does not have an article with this exact name. Please search for {entry} in Wiki to check for alternative titles or spellings.")
 
-    return render(request, "encyclopedia/entry.html", {
-        "title": title,
-        "content": content
-    })
+
 
 def random(request):
     entries = util.list_entries()
@@ -67,8 +67,7 @@ def random(request):
         return redirect('encyclopedia:entry', entry=entry)
     # No entries found in directory
     else:
-        page_header = "No articles found in the article repository"
-        return render_index(request, page_header, entries)
+        return render_message(request, "Warning", "No articles found in the article repository")
 
 class NewPageForm(forms.Form):
     title = forms.CharField(
@@ -95,6 +94,36 @@ def newpage(request):
                 return redirect('encyclopedia:entry', entry=title)
             else:
                 # Page already exists
+                return render_message(request, "Error", "Article already exists, please try to edit instead.")
+        else:
+            # Form is NOT valid
+            return render_message(request, "Error", "There was an error validating data. Please try again.")
+
+    return render(request, "encyclopedia/newpage.html", {
+        "form": NewPageForm()
+    })
+
+class EditPageForm(forms.Form):
+    content = forms.CharField(
+        label="",
+        widget=forms.Textarea(attrs={'placeholder': 'Markdown Syntax Page Content', 'class': 'page_content'})
+        )
+
+def editpage(request, entry):
+    if request.method == "POST":
+        """
+        form = NewPageForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            # Try to get page
+            if util.get_entry(title) is None:
+                # Page does NOT exists
+                content = form.cleaned_data["content"]
+                util.save_entry(title, content)
+                # Redirect to the new page just created
+                return redirect('encyclopedia:entry', entry=title)
+            else:
+                # Page already exists
                 return render(request, "encyclopedia/entry.html", {
                     "title": "Error",
                     "content": "Article already exists, please try to edit instead."
@@ -105,11 +134,22 @@ def newpage(request):
                 "title": "Error",
                 "content": "There was an error validating data. Please try again."
             })
-    return render(request, "encyclopedia/newpage.html", {
-        "form": NewPageForm()
+        """
+    return render(request, "encyclopedia/editpage.html", {
+        "page_title": entry,
+        "form": EditPageForm()
     })
 
+def message(request):
+    return render(request, "encyclopedia/message.html")
+
 # Aux functions
+def render_message(request, title, message):
+    return render(request, "encyclopedia/message.html", {
+        "title": title,
+        "message": message
+    })
+
 def render_index(request, page_header, entries):
     return render(request, "encyclopedia/index.html", {
         "page_header": page_header,

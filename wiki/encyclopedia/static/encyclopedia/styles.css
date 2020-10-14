@@ -62,3 +62,12 @@ textarea {
 .button_container {
   padding-top:5px
 }
+
+.entryTitleContainer {
+  display: flex
+}
+
+.editLinkContainer {
+  padding-top: 38px;
+  padding-left: 10px;
+}
