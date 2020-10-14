@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django import forms
+from django.urls import reverse
 import random as rdm
 from . import util
 from . import lang_util
@@ -70,18 +71,39 @@ def random(request):
         return render_index(request, page_header, entries)
 
 class NewPageForm(forms.Form):
-    title = forms.CharField(label="", widget=forms.TextInput(attrs={'placeholder': 'Title', 'class': 'page_title'}))
-    content = forms.CharField(label="", widget=forms.Textarea(attrs={'placeholder': 'Markdown Syntax Page Content', 'class': 'page_content'}))
+    title = forms.CharField(
+        label="",
+        max_length=255,
+        widget=forms.TextInput(attrs={'placeholder': 'Title', 'class': 'page_title'})
+        )
+    content = forms.CharField(
+        label="",
+        widget=forms.Textarea(attrs={'placeholder': 'Markdown Syntax Page Content', 'class': 'page_content'})
+        )
 
 def newpage(request):
     if request.method == "POST":
         form = NewPageForm(request.POST)
         if form.is_valid():
-
-            return HttpResponseRedirect(reverse("encyclopedia:newpage"))
+            title = form.cleaned_data["title"]
+            # Try to get page
+            if util.get_entry(title) is None:
+                # Page does NOT exists
+                content = form.cleaned_data["content"]
+                util.save_entry(title, content)
+                # Redirect to the new page just created
+                return redirect('encyclopedia:entry', entry=title)
+            else:
+                # Page already exists
+                return render(request, "encyclopedia/entry.html", {
+                    "title": "Error",
+                    "content": "Article already exists, please try to edit instead."
+                })
         else:
-            return render(request, "encyclopedia/add.html", {
-                "form":form
+            # Form is NOT valid
+            return render(request, "encyclopedia/entry.html", {
+                "title": "Error",
+                "content": "There was an error validating data. Please try again."
             })
     return render(request, "encyclopedia/newpage.html", {
         "form": NewPageForm()
