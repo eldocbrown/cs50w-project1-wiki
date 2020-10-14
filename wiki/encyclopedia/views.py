@@ -111,22 +111,21 @@ class EditPageForm(forms.Form):
 
 def editpage(request, entry):
     if request.method == "POST":
-        """
-        form = NewPageForm(request.POST)
+        form = EditPageForm(request.POST)
         if form.is_valid():
-            title = form.cleaned_data["title"]
+            title = entry
             # Try to get page
-            if util.get_entry(title) is None:
-                # Page does NOT exists
+            if util.get_entry(title) is not None:
+                # Page already exists
                 content = form.cleaned_data["content"]
                 util.save_entry(title, content)
                 # Redirect to the new page just created
                 return redirect('encyclopedia:entry', entry=title)
             else:
-                # Page already exists
+                # Page dos NOT exists
                 return render(request, "encyclopedia/entry.html", {
                     "title": "Error",
-                    "content": "Article already exists, please try to edit instead."
+                    "content": "Article not found, please try to create a new one instead."
                 })
         else:
             # Form is NOT valid
@@ -134,8 +133,6 @@ def editpage(request, entry):
                 "title": "Error",
                 "content": "There was an error validating data. Please try again."
             })
-        """
-        bla = entry
     elif request.method == "GET":
         #Try to get entry
         mdContent = util.get_entry(entry)
