@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block body %}
+
     <h1>{{ page_title }}</h1>
     <div class="form_container">
       <form action="{% url 'encyclopedia:editpage' entry=page_title %}" method="post" style="height:100%;width:100%">

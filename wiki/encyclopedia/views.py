@@ -106,7 +106,7 @@ def newpage(request):
 class EditPageForm(forms.Form):
     content = forms.CharField(
         label="",
-        widget=forms.Textarea(attrs={'placeholder': 'Markdown Syntax Page Content', 'class': 'page_content'})
+        widget=forms.Textarea(attrs={'class': 'page_content'})
         )
 
 def editpage(request, entry):
@@ -135,10 +135,20 @@ def editpage(request, entry):
                 "content": "There was an error validating data. Please try again."
             })
         """
-    return render(request, "encyclopedia/editpage.html", {
-        "page_title": entry,
-        "form": EditPageForm()
-    })
+        bla = entry
+    elif request.method == "GET":
+        #Try to get entry
+        mdContent = util.get_entry(entry)
+        if mdContent is not None:
+            content = mdContent
+            title = entry
+            form = EditPageForm(initial={'content': content})
+            return render(request, "encyclopedia/editpage.html", {
+                "page_title": title,
+                "form": form
+            })
+        else:
+            return render_message(request, "Article not found", f"Wiki does not have an article with this exact name. Please search for {entry} in Wiki to check for alternative titles or spellings.")
 
 def message(request):
     return render(request, "encyclopedia/message.html")
